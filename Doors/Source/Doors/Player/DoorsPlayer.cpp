@@ -230,12 +230,6 @@ void ADoorsPlayer::SearchInteractables()
         DetectedInteractable = Cast<UObject>(Result.GetActor());
     else
         DetectedInteractable = nullptr;
-    
-    // Ensure that it is interactable
-    if (!IsImplemented(DetectedInteractable, UInteractableInterface::StaticClass()))
-        DetectedInteractable = nullptr;
-    else if (!IInteractableInterface::Execute_IsInteractable(DetectedInteractable))
-        DetectedInteractable = nullptr;
 
     
     if (DetectedInteractable)
@@ -257,6 +251,7 @@ void ADoorsPlayer::SearchInteractables()
 void ADoorsPlayer::InteractableFound(UObject *New)
 {
     SetOutline(New, true);
+    OnInteractableFound();
 }
 
 void ADoorsPlayer::InteractableChanged(UObject *New, UObject *Old)
@@ -268,6 +263,7 @@ void ADoorsPlayer::InteractableChanged(UObject *New, UObject *Old)
 void ADoorsPlayer::InteractableLost(UObject *Old)
 {
     SetOutline(Old, false);
+    OnInteractableLost();
 }
 
 void ADoorsPlayer::SetOutline(UObject *Obj, bool Value)

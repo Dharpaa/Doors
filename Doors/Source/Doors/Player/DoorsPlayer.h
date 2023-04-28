@@ -177,6 +177,12 @@ class ADoorsPlayer : public ACharacter
 	    /** Reset the trace channel by the original one (ETraceTypeQuery::TraceTypeQuery1). */
 	    void ResetTraceChannel();
 
+		UFUNCTION(Category = "Interactables|Rays", BlueprintImplementableEvent)
+		void OnInteractableFound();
+
+		UFUNCTION(Category = "Interactables|Rays", BlueprintImplementableEvent)
+		void OnInteractableLost();
+
 	    UFUNCTION(Category = "Interactables|Tap", BlueprintImplementableEvent)
 	    /** Event that triggers when player left click an interactable. */
 	    void OnTap();
@@ -184,6 +190,8 @@ class ADoorsPlayer : public ACharacter
 	    UFUNCTION(Category = "Interactables|Tap", BlueprintImplementableEvent)
 	    /** Event that triggers when player right click an interactable. */
 	    void OnCancel();
+	
+		
 
 	  private:
 	    UPROPERTY(Category = "Interactables|Rays", EditDefaultsOnly, BlueprintReadWrite,
@@ -204,11 +212,11 @@ class ADoorsPlayer : public ACharacter
 
 	    UPROPERTY(Category = "Interactables|Rays", EditDefaultsOnly, BlueprintReadWrite,
 	              meta = (AllowPrivateAccess = "true"))
-	    bool ShowDebugInteractables = false;
+	    bool ShowDebugInteractables = true;
 
 	    UPROPERTY(Category = "Interactables|Tap", EditDefaultsOnly, BlueprintReadWrite,
 	              meta = (AllowPrivateAccess = "true"))
-	    bool ShowDebugTap = false;
+	    bool ShowDebugTap = true;
 
 	    void SearchInteractables();
 
@@ -217,6 +225,7 @@ class ADoorsPlayer : public ACharacter
 	    void InteractableLost(UObject *Old);
 
 	    void SetOutline(UObject *Obj, bool Value);
+	
 
 	    UObject *DetectedInteractable = nullptr;    // Interactable currently being detected by the ray
 	    UObject *OldDetectedInteractable = nullptr; // Last frame DetectedInteractable

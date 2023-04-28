@@ -32,7 +32,7 @@ public:
 	void UpdateNextTargetPoint(); //Indicates where the npc should go
 	
 	UFUNCTION(BlueprintCallable)
-		virtual void TurnToWaypoint();
+	virtual void TurnToWaypoint();
 
 	virtual void EndTurningToWaypoint();
 	//Patrol rotation
