@@ -54,10 +54,9 @@ void ADoorsPlayer::BeginPlay()
 
     // Log reserve space
     Logger::Log(ShowDebugStateChanges, "-", 5.f, FColor::Transparent, 0);
-    Logger::Log(ShowDebugFootsteps, "-", 5.f, FColor::Transparent, 1);
-    Logger::Log(ShowDebugInteractables, "-", 5.f, FColor::Transparent, 2);
+    Logger::Log(ShowDebugInteractables, "-", 5.f, FColor::Transparent, 1);
+    Logger::Log(ShowDebugTap, "-", 5.f, FColor::Transparent, 2);
     Logger::Log(ShowDebugTap, "-", 5.f, FColor::Transparent, 3);
-    Logger::Log(ShowDebugTap, "-", 5.f, FColor::Transparent, 4);
 
     // Cache PlayerController
     PlayerController = Cast<ADoorsPlayerController>(GetController());
@@ -412,47 +411,6 @@ void ADoorsPlayer::Look(float DeltaSeconds)
 {
     AddControllerPitchInput(fPitchSensibility * LookAxis.Y * DeltaSeconds);
     AddControllerYawInput(fYawSensibility * LookAxis.X * DeltaSeconds);
-}
-
-// Sound and AI Stimuli
-
-void ADoorsPlayer::PlayerMakeNoise(bool IsPlayerNoise)
-{
-    UAISense_Hearing::ReportNoiseEvent(GetWorld(), GetActorLocation(), 1.0f, this, 0.0f,
-                                        IsPlayerNoise ? DoorsAItags::noise_tag : DoorsAItags::noiseinteractable_tag);
-}
-
-void ADoorsPlayer::OnFootstepCpp()
-{
-    auto *World = GetWorld();
-    auto Heigth = GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 2.f;
-    auto Start = SpringArmCmp->GetComponentLocation();
-    auto End = Start + FVector::DownVector * (Heigth + 10.f);
-
-    FHitResult Hit;
-    bool DidHit = false;
-
-    if (ShowDebugFootsteps)
-    {
-        DidHit = UKismetSystemLibrary::LineTraceSingle(World, Start, End, ETraceTypeQuery::TraceTypeQuery1, false,
-                                                       {DoorsPlayer}, EDrawDebugTrace::ForDuration, Hit, true,
-                                                       FLinearColor::Red, FLinearColor::Green, 5.f);
-    }
-    else
-    {
-        DidHit = UKismetSystemLibrary::LineTraceSingle(World, Start, End, ETraceTypeQuery::TraceTypeQuery1, false,
-                                                       {DoorsPlayer}, EDrawDebugTrace::None, Hit, true);
-    }
-
-    auto SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
-
-    Logger::LogEnum(ShowDebugFootsteps, SurfaceType, 1000.0f, FColor::Emerald, 1);
-
-    if (DidHit)
-    {
-        FootstepSide = !FootstepSide;
-        OnFootstep(SurfaceType, FootstepSide);
-    }
 }
 
 void ADoorsPlayer::OnAnyKey(FKey Key)

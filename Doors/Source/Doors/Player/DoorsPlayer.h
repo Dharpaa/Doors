@@ -76,7 +76,6 @@ class ADoorsPlayer : public ACharacter
 		 * @return The Player Camera Manager. */
 		APlayerCameraManager *GetCameraManager();
 
-	//??
 		UPROPERTY(Category = "Player|Sensibility", EditAnywhere, BlueprintReadWrite)
 		float fPitchSensibility = 80.f;
 		UPROPERTY(Category = "Player|Sensibility", EditAnywhere, BlueprintReadWrite)
@@ -99,35 +98,6 @@ class ADoorsPlayer : public ACharacter
 		ADoorsPlayerController *PlayerController = nullptr;
 
 		APlayerCameraManager *PlayerCameraManager = nullptr;
-
-	// Sound and AI Stimuli
-
-	public:
-		UFUNCTION(Category = "Sound", BlueprintImplementableEvent)
-		/** Event that triggers each time a foot is placed on the floor.
-		 * @param Surface The surface the foot is on.
-		 * @param Side Flipflop to decide the foot being placed. */
-		void OnFootstep(EPhysicalSurface Surface, bool Side);
-
-		UFUNCTION(Category = "Sound", BlueprintCallable)
-		/** Makes a noise in the current player position.
-		 * @param IsPlayerNoise Whether the player is doing the noise or just coming from them. */
-		void PlayerMakeNoise(bool IsPlayerNoise);
-
-		bool FootstepSide = true;
-
-	private:
-		UPROPERTY(Category = "Sound", EditDefaultsOnly)
-		/** Delay before footsteping cycle begins. */
-		float FootstepDelay = 0.2f;
-
-		UPROPERTY(Category = "Sound", EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		bool ShowDebugFootsteps = false;
-
-		void OnFootstepCpp();
-
-		FTimerHandle FootstepTimerHandle;
-
 	
 	// States
 
