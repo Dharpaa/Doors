@@ -3,14 +3,14 @@
 #include "CoreMinimal.h"
 #include "PlayerStateBase.generated.h"
 
-class APlayer;
+class ADoorsPlayer;
 
 UCLASS(EditInlineNew, DefaultToInstanced)
 class UPlayerStateBase : public UObject
 {
 	GENERATED_BODY()
 
-	friend APlayer;
+	friend ADoorsPlayer;
 
 protected:
 	virtual void Enable();

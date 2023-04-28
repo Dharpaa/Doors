@@ -1,5 +1,5 @@
 ﻿#include "PlayerStateWandering.h"
-#include "../Player.h"
+#include "../DoorsPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -12,9 +12,9 @@ void UPlayerStateWandering::Enable()
     CurrentMovementState = PlayerStateEnum::WANDER_IDLE;
     PreviousMovementState = PlayerStateEnum::WANDER_IDLE;
     
-    APlayer::MskPlayer->GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
+    ADoorsPlayer::DoorsPlayer->GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
 
-    if (APlayer::MskPlayer->bActionRunState)
+    if (ADoorsPlayer::DoorsPlayer->bActionRunState)
         ActionRunPressed();
 }
 
@@ -22,7 +22,7 @@ void UPlayerStateWandering::Disable()
 {
     Super::Disable();
 
-    APlayer::MskPlayer->GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
+    ADoorsPlayer::DoorsPlayer->GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
 }
 
 void UPlayerStateWandering::Tick(float DeltaTime)
@@ -30,38 +30,32 @@ void UPlayerStateWandering::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 
     // Run backwards check
-    auto MoveAxis = APlayer::MskPlayer->GetMovementAxis();
+    auto MoveAxis = ADoorsPlayer::DoorsPlayer->GetMovementAxis();
 
-    if (APlayer::MskPlayer->bActionRunState)
+    if (ADoorsPlayer::DoorsPlayer->bActionRunState)
         if (MoveAxis.Y < 0.f)
-            APlayer::MskPlayer->SetMovementAxis(MoveAxis / BackwardsRunPenalty);
+            ADoorsPlayer::DoorsPlayer->SetMovementAxis(MoveAxis / BackwardsRunPenalty);
 
     // State by speed
-    if (APlayer::MskPlayer->GetCharacterMovement()->Velocity.Size() > ConsideredRunning)
-        CurrentMovementState = MskPlayerStateEnum::WANDER_RUN;
-    else if (APlayer::MskPlayer->GetCharacterMovement()->Velocity.Size() > ConsideredWalking)
-        CurrentMovementState = MskPlayerStateEnum::WANDER_WALK;
+    if (ADoorsPlayer::DoorsPlayer->GetCharacterMovement()->Velocity.Size() > ConsideredRunning)
+        CurrentMovementState = PlayerStateEnum::WANDER_RUN;
+    else if (ADoorsPlayer::DoorsPlayer->GetCharacterMovement()->Velocity.Size() > ConsideredWalking)
+        CurrentMovementState = PlayerStateEnum::WANDER_WALK;
     else
-        CurrentMovementState = MskPlayerStateEnum::WANDER_IDLE;
+        CurrentMovementState = PlayerStateEnum::WANDER_IDLE;
 
     // Change by state
     if (CurrentMovementState != PreviousMovementState)
         switch (CurrentMovementState)
         {
-        case MskPlayerStateEnum::WANDER_IDLE:
-            APlayer::MskPlayer->StartHeadBob(HeadBobIdle);
-            APlayer::MskPlayer->SetCanLean(CanLeanWhileIdle);
-            APlayer::MskPlayer->SetState(MskPlayerStateEnum::WANDER_IDLE);
+        case PlayerStateEnum::WANDER_IDLE:
+            ADoorsPlayer::DoorsPlayer->SetState(PlayerStateEnum::WANDER_IDLE);
             break;
-        case MskPlayerStateEnum::WANDER_WALK:
-            APlayer::MskPlayer->StartHeadBob(HeadBobWalk, true);
-            APlayer::MskPlayer->SetCanLean(CanLeanWhileWalking);
-            APlayer::MskPlayer->SetState(MskPlayerStateEnum::WANDER_WALK);
+        case PlayerStateEnum::WANDER_WALK:
+            ADoorsPlayer::DoorsPlayer->SetState(PlayerStateEnum::WANDER_WALK);
             break;
-        case MskPlayerStateEnum::WANDER_RUN:
-            APlayer::MskPlayer->StartHeadBob(HeadBobRun, true);
-            APlayer::MskPlayer->SetCanLean(CanLeanWhileRunning);
-            APlayer::MskPlayer->SetState(MskPlayerStateEnum::WANDER_RUN);
+        case PlayerStateEnum::WANDER_RUN:
+            ADoorsPlayer::DoorsPlayer->SetState(PlayerStateEnum::WANDER_RUN);
             break;
         }
 
@@ -73,19 +67,19 @@ void UPlayerStateWandering::ActionRunPressed()
 {
     Super::ActionRunPressed();
 
-    APlayer::MskPlayer->GetCharacterMovement()->MaxWalkSpeed = MaxRunSpeed;
+    ADoorsPlayer::DoorsPlayer->GetCharacterMovement()->MaxWalkSpeed = MaxRunSpeed;
 }
 
 void UPlayerStateWandering::ActionRunReleased()
 {
     Super::ActionRunPressed();
 
-    APlayer::MskPlayer->GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
+    ADoorsPlayer::DoorsPlayer->GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
 }
 
 void UPlayerStateWandering::ActionSneakPressed()
 {
     Super::ActionSneakPressed();
 
-    APlayer::MskPlayer->SetState(MskPlayerStateEnum::SNEAK_IDLE, true);
+    ADoorsPlayer::DoorsPlayer->SetState(PlayerStateEnum::SNEAK_IDLE, true);
 }

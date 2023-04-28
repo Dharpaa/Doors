@@ -4,8 +4,8 @@
 #include "Doors/Enumerators/PlayerStateEnum.h"
 #include "PlayerStateWandering.generated.h"
 
-class UMskCamShake;
-class UMskLeanParams;
+class UCamShake;
+class ULeanParams;
 
 UCLASS()
 class UPlayerStateWandering : public UPlayerStateBase
@@ -37,6 +37,14 @@ class UPlayerStateWandering : public UPlayerStateBase
     UPROPERTY(Category = State, EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
     float MaxRunSpeed = 350.f;
 
+	UPROPERTY(Category = State, EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	/** Minimun speed to be considered as movement. Used for head bobbing selection. */
+	float ConsideredWalking = 100.f;
+
+	UPROPERTY(Category = State, EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	/** Minimun speed to be considered as movement. Used for head bobbing selection. */
+	float ConsideredRunning = 300.f;
+	
     UPROPERTY(Category = State, EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
     /** Movement penalty multiplier applied to forwards axis of movement when running backwards. */
     float BackwardsRunPenalty = 3.f;
