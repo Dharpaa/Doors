@@ -1,0 +1,13 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UE4Editor-Inspectables-0677.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"F:\Git Proyects\Reel\Reel\Inspectables\Intermediate\Build\Win64\InspectablesEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.obj"
+"F:\Git Proyects\Reel\Reel\Inspectables\Intermediate\Build\Win64\UE4Editor\Development\Inspectables\Inspectables.cpp.obj"
+"F:\Git Proyects\Reel\Reel\Inspectables\Intermediate\Build\Win64\UE4Editor\Development\Inspectables\InspectablesProyect.cpp.obj"
+"F:\Git Proyects\Reel\Reel\Inspectables\Intermediate\Build\Win64\UE4Editor\Development\Inspectables\Default.rc2.res"
+/OUT:"F:\Git Proyects\Reel\Reel\Inspectables\Intermediate\Build\Win64\UE4Editor\Development\Inspectables\UE4Editor-Inspectables-0677.lib"

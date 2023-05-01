@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\Inspectables.uproject" />
+    <Filter Include="Source">
+      <UniqueIdentifier>{25EF0958-BD18-44BC-A8C1-DE9DE4B39356}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\Inspectables.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\Source\InspectablesEditor.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <Filter Include="Config">
+      <UniqueIdentifier>{43647201-F7A4-49FC-9EBF-F87DDCD92329}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\DefaultEditor.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEngine.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultGame.ini">
+      <Filter>Config</Filter>
+    </None>
+    <Filter Include="Source\Inspectables">
+      <UniqueIdentifier>{4C25EF35-DEB9-49F7-89C0-A04824218B95}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\Inspectables\Inspectables.Build.cs">
+      <Filter>Source\Inspectables</Filter>
+    </None>
+    <ClCompile Include="..\..\Source\Inspectables\Inspectables.cpp">
+      <Filter>Source\Inspectables</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Inspectables\Inspectables.h">
+      <Filter>Source\Inspectables</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\Inspectables\InspectablesProyect.cpp">
+      <Filter>Source\Inspectables</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Inspectables\InspectablesProyect.h">
+      <Filter>Source\Inspectables</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

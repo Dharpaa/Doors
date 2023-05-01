@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "Inspectables",
+			"Path": "F:\\Git Proyects\\Reel\\Reel\\Inspectables\\Source\\Inspectables.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "InspectablesEditor",
+			"Path": "F:\\Git Proyects\\Reel\\Reel\\Inspectables\\Source\\InspectablesEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}

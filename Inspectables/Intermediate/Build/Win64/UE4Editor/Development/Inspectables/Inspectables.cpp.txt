@@ -1,0 +1,2 @@
+F:\Git Proyects\Reel\Reel\Inspectables\Intermediate\Build\Win64\UE4Editor\Development\Inspectables\Definitions.Inspectables.h
+F:\Git Proyects\Reel\Reel\Inspectables\Source\Inspectables\Inspectables.h
