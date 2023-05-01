@@ -13,10 +13,10 @@ class ADoorsTargetPoint : public ATargetPoint
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(Category = MskWaypoint, EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(Category = Waypoint, EditAnywhere, BlueprintReadOnly)
 		int32 Position;
 
-	UPROPERTY(Category = MskWaypoint, EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(Category = Waypoint, EditAnywhere, BlueprintReadOnly)
 		float WaitTime;
 
 	float GetWaitTime();

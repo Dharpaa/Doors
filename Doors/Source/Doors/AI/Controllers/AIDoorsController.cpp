@@ -18,12 +18,12 @@ void AAIDoorsController::OnPossess(class APawn* InPawn)
 	}
 	BlackboardComponent = BrainComponent->GetBlackboardComponent();
 
-	ADoorsEnemy* MskActor = Cast<ADoorsEnemy>(GetPawn());
+	ADoorsEnemy* EnemyActor = Cast<ADoorsEnemy>(GetPawn());
 	// If WaypointIndex is -1, the npc is "turret" and doesn't move
-	if (MskActor->WayPoints.Num() == 0)
+	if (EnemyActor->WayPoints.Num() == 0)
 	{
 		BlackboardComponent->SetValueAsInt(DoorsBlackboardKeys::waypointIndex, 0);
-		BlackboardComponent->SetValueAsVector(DoorsBlackboardKeys::waypointLocation, MskActor->GetTargetLocation());
+		BlackboardComponent->SetValueAsVector(DoorsBlackboardKeys::waypointLocation, EnemyActor->GetTargetLocation());
 	}
 }
 
@@ -36,8 +36,8 @@ void AAIDoorsController::UpdateNextTargetPoint()
 {
 	int32 TargetPointIndex = BlackboardComponent->GetValueAsInt(DoorsBlackboardKeys::waypointIndex);
 
-	ADoorsEnemy* MskActor = Cast<ADoorsEnemy>(GetPawn());
-	TArray<ADoorsTargetPoint*> Waypoints = MskActor->WayPoints;
+	ADoorsEnemy* EnemyActor = Cast<ADoorsEnemy>(GetPawn());
+	TArray<ADoorsTargetPoint*> Waypoints = EnemyActor->WayPoints;
 
 	unsigned int WaypointsLen = Waypoints.Num();
 	unsigned int NewTargetPointIndex;
@@ -48,7 +48,7 @@ void AAIDoorsController::UpdateNextTargetPoint()
 		return;
 	}
 
-	if (MskActor->PatrolInOrder)
+	if (EnemyActor->PatrolInOrder)
 	{
 		NewTargetPointIndex = (TargetPointIndex + 1) % WaypointsLen;
 	}

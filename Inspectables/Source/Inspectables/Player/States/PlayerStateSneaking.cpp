@@ -1,5 +1,5 @@
 ﻿#include "PlayerStateSneaking.h"
-#include "../DoorsPlayer.h"
+#include "../InspectPlayer.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -13,10 +13,10 @@ void UPlayerStateSneaking::Enable()
     IsCrouching = false;
     IsCrouchingOld = false;
     
-    ADoorsPlayer::DoorsPlayer->GetCharacterMovement()->MaxWalkSpeedCrouched = MaxSneakSpeed;
+    AInspectPlayer::Player->GetCharacterMovement()->MaxWalkSpeedCrouched = MaxSneakSpeed;
 
-    ADoorsPlayer::DoorsPlayer->Crouch();
-    ADoorsPlayer::DoorsPlayer->GetSpringArmCmp()->SetRelativeLocation({0.f, 0.f, ADoorsPlayer::DoorsPlayer->CrouchedEyeHeight});
+    AInspectPlayer::Player->Crouch();
+    AInspectPlayer::Player->GetSpringArmCmp()->SetRelativeLocation({0.f, 0.f, AInspectPlayer::Player->CrouchedEyeHeight});
 }
 
 void UPlayerStateSneaking::Disable()
@@ -29,7 +29,7 @@ void UPlayerStateSneaking::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 
     // State by speed
-    if (ADoorsPlayer::DoorsPlayer->GetCharacterMovement()->Velocity.Size() > ConsideredWalking)
+    if (AInspectPlayer::Player->GetCharacterMovement()->Velocity.Size() > ConsideredWalking)
         CurrentMovementState = PlayerStateEnum::SNEAK_WALK;
     else
         CurrentMovementState = PlayerStateEnum::SNEAK_IDLE;
@@ -39,17 +39,17 @@ void UPlayerStateSneaking::Tick(float DeltaTime)
         switch (CurrentMovementState)
         {
         case PlayerStateEnum::SNEAK_IDLE:
-            ADoorsPlayer::DoorsPlayer->SetState(PlayerStateEnum::SNEAK_IDLE);
+            AInspectPlayer::Player->SetState(PlayerStateEnum::SNEAK_IDLE);
             break;
         case PlayerStateEnum::SNEAK_WALK:
-            ADoorsPlayer::DoorsPlayer->SetState(PlayerStateEnum::SNEAK_WALK);
+            AInspectPlayer::Player->SetState(PlayerStateEnum::SNEAK_WALK);
             break;
         }
 
     PreviousMovementState = CurrentMovementState;
 
     // Crouching
-    IsCrouching = ADoorsPlayer::DoorsPlayer->bIsCrouched;
+    IsCrouching = AInspectPlayer::Player->bIsCrouched;
 
     if (IsCrouching && !IsCrouchingOld)      // Started Crouching
         OnStartCrouching();                  //
@@ -63,14 +63,14 @@ void UPlayerStateSneaking::ActionSneakPressed()
 {
     Super::ActionSneakPressed();
 
-    ADoorsPlayer::DoorsPlayer->UnCrouch();
+    AInspectPlayer::Player->UnCrouch();
 }
 
 void UPlayerStateSneaking::ActionRunPressed()
 {
     Super::ActionRunPressed();
 
-    ADoorsPlayer::DoorsPlayer->UnCrouch();
+    AInspectPlayer::Player->UnCrouch();
 }
 
 void UPlayerStateSneaking::OnStartCrouching()
@@ -79,6 +79,6 @@ void UPlayerStateSneaking::OnStartCrouching()
 
 void UPlayerStateSneaking::OnStopCrouching()
 {
-    ADoorsPlayer::DoorsPlayer->GetSpringArmCmp()->SetRelativeLocation({0.f, 0.f, ADoorsPlayer::DoorsPlayer->BaseEyeHeight});
-    ADoorsPlayer::DoorsPlayer->SetState(PlayerStateEnum::WANDER_IDLE, true);
+    AInspectPlayer::Player->GetSpringArmCmp()->SetRelativeLocation({0.f, 0.f, AInspectPlayer::Player->BaseEyeHeight});
+    AInspectPlayer::Player->SetState(PlayerStateEnum::WANDER_IDLE, true);
 }

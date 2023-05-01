@@ -1,18 +1,16 @@
-﻿#include "DoorsPlayerController.h"
-#include "Perception/AISense_Hearing.h"
-#include "Perception/AISense_Sight.h"
-#include "../GameMode/DoorsGameplayGameMode.h"
+﻿#include "InspectPlayerController.h"
+#include "../GameMode/InspectGameplayGameMode.h"
 #include <Runtime/Engine/Classes/Kismet/GameplayStatics.h>
 
-ADoorsPlayerController::ADoorsPlayerController()
+AInspectPlayerController::AInspectPlayerController()
 {
 }
 
-void ADoorsPlayerController::BeginPlay()
+void AInspectPlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
-    auto* GM = Cast<ADoorsGameplayGameMode>(UGameplayStatics::GetGameMode(this));
+    auto* GM = Cast<AInspectGameplayGameMode>(UGameplayStatics::GetGameMode(this));
 
     if (!GM)
         return;

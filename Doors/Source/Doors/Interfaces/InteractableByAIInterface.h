@@ -19,7 +19,7 @@ class IInteractableByAIInterface
     void OnInteractAIStop();
 
     UFUNCTION(Category = Interactable, BlueprintCallable, BlueprintNativeEvent)
-    void OnResetMskInteractables();
+    void OnResetInteractables();
 
     UFUNCTION(Category = Interactable, BlueprintCallable, BlueprintNativeEvent)
     /** This Function Returns an AnimMontage to play when the enemy reaches the object */

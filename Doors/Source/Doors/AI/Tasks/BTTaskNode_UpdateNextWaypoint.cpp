@@ -4,9 +4,9 @@
 
 EBTNodeResult::Type UBTTaskNode_UpdateNextWaypoint::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-    AAIDoorsController* AIMskController = Cast<AAIDoorsController>(OwnerComp.GetOwner());
+    AAIDoorsController* AIController = Cast<AAIDoorsController>(OwnerComp.GetOwner());
 
-    AIMskController->UpdateNextTargetPoint();
+    AIController->UpdateNextTargetPoint();
 
     return EBTNodeResult::Succeeded;
 }

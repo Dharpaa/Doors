@@ -51,7 +51,7 @@ class ADoorsPlayer : public ACharacter
 	public:
 		static ADoorsPlayer *DoorsPlayer;
 
-		UFUNCTION(Category = "Maskerade", BlueprintPure)
+		UFUNCTION(Category = "Utils", BlueprintPure)
 	   /** Get the player and its state.
 		* @return Struct that contains the player and if it's valid or not. */
 	   static UPARAM(DisplayName = "‎") FDoorsPlayerResponse GetDoorsPlayer();
@@ -182,11 +182,11 @@ class ADoorsPlayer : public ACharacter
 
 	    UPROPERTY(Category = "Interactables|Rays", EditDefaultsOnly, BlueprintReadWrite,
 	              meta = (AllowPrivateAccess = "true"))
-	    bool ShowDebugInteractables = true;
+	    bool ShowDebugInteractables = false;
 
 	    UPROPERTY(Category = "Interactables|Tap", EditDefaultsOnly, BlueprintReadWrite,
 	              meta = (AllowPrivateAccess = "true"))
-	    bool ShowDebugTap = true;
+	    bool ShowDebugTap = false;
 
 	    void SearchInteractables();
 

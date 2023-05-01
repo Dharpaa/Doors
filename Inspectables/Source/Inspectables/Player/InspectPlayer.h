@@ -4,10 +4,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "../Enumerators/PlayerStateEnum.h"
-#include "DoorsPlayer.generated.h"
+#include "InspectPlayer.generated.h"
 
-class ADoorsGameplayGameMode;
-class ADoorsPlayerController;
+class AInspectGameplayGameMode;
+class AInspectPlayerController;
 class UPlayerStateSneaking;
 class UPlayerStateWandering;
 class UPlayerStateBase;
@@ -15,18 +15,18 @@ class USpringArmComponent;
 class UCameraComponent;
 
 USTRUCT(BlueprintType)
-struct FDoorsPlayerResponse
+struct FPlayerResponse
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (DisplayName = "Player"))
-	ADoorsPlayer *Player = nullptr;
+	AInspectPlayer *Player = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (DisplayName = "IsValid"))
 	bool bIsValid = false;
 
 	// Constructor
-	FDoorsPlayerResponse(ADoorsPlayer *_Player = nullptr, bool _bIsValid = false)
+	FPlayerResponse(AInspectPlayer *_Player = nullptr, bool _bIsValid = false)
 	{
 		Player = _Player;
 		bIsValid = _bIsValid;
@@ -34,12 +34,14 @@ struct FDoorsPlayerResponse
 };
 
 UCLASS()
-class ADoorsPlayer : public ACharacter
+class AInspectPlayer : public ACharacter
 {
+	friend UPlayerStateInspecting;
+	
 	GENERATED_BODY()
 
 	public:
-		ADoorsPlayer();
+		AInspectPlayer();
 
 	private:
 		virtual void BeginPlay() override;
@@ -49,12 +51,12 @@ class ADoorsPlayer : public ACharacter
 	//Components
 	
 	public:
-		static ADoorsPlayer *DoorsPlayer;
+		static AInspectPlayer *Player;
 
-		UFUNCTION(Category = "Maskerade", BlueprintPure)
+		UFUNCTION(Category = "Utils", BlueprintPure)
 	   /** Get the player and its state.
 		* @return Struct that contains the player and if it's valid or not. */
-	   static UPARAM(DisplayName = "‎") FDoorsPlayerResponse GetDoorsPlayer();
+	   static UPARAM(DisplayName = "‎") FPlayerResponse GetDoorsPlayer();
 	
 		UFUNCTION(Category = "Components", BlueprintCallable)
 		/** Get camera component.
@@ -69,7 +71,7 @@ class ADoorsPlayer : public ACharacter
 		UFUNCTION(Category = "Components", BlueprintCallable)
 		/** Get player controller.
 		 * @return The Player Controller. */
-		ADoorsPlayerController *GetPlayerController();
+		AInspectPlayerController *GetPlayerController();
 
 		UFUNCTION(Category = "Components", BlueprintCallable)
 		/** Get the camera manager that controls the camera component.
@@ -94,8 +96,8 @@ class ADoorsPlayer : public ACharacter
 		UPROPERTY(Category = "Player", VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		USceneComponent *HandSocketCmp;
 
-		ADoorsGameplayGameMode *GameMode = nullptr;
-		ADoorsPlayerController *PlayerController = nullptr;
+		AInspectGameplayGameMode *GameMode = nullptr;
+		AInspectPlayerController *PlayerController = nullptr;
 
 		APlayerCameraManager *PlayerCameraManager = nullptr;
 	
@@ -182,11 +184,11 @@ class ADoorsPlayer : public ACharacter
 
 	    UPROPERTY(Category = "Interactables|Rays", EditDefaultsOnly, BlueprintReadWrite,
 	              meta = (AllowPrivateAccess = "true"))
-	    bool ShowDebugInteractables = true;
+	    bool ShowDebugInteractables = false;
 
 	    UPROPERTY(Category = "Interactables|Tap", EditDefaultsOnly, BlueprintReadWrite,
 	              meta = (AllowPrivateAccess = "true"))
-	    bool ShowDebugTap = true;
+	    bool ShowDebugTap = false;
 
 	    void SearchInteractables();
 

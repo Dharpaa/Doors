@@ -2,15 +2,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "DoorsPlayerController.generated.h"
+#include "InspectPlayerController.generated.h"
 
 UCLASS()
-class ADoorsPlayerController : public APlayerController
+class AInspectPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
 	public:
-		ADoorsPlayerController();
+		AInspectPlayerController();
 
 		virtual void BeginPlay() override;
 };

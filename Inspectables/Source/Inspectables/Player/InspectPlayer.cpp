@@ -1,5 +1,5 @@
-﻿#include "DoorsPlayer.h"
-#include "DoorsPlayerController.h"
+﻿#include "InspectPlayer.h"
+#include "InspectPlayerController.h"
 #include "States/PlayerStateBase.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -9,10 +9,9 @@
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Blueprint/UserWidget.h"
-#include "../GameMode/DoorsGameplayGameMode.h"
+#include "../GameMode/InspectGameplayGameMode.h"
 #include "../Interfaces/InteractableInterface.h"
 #include "../Interfaces/OutlinableInterface.h"
-#include "../AI/DoorsAITag.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "../Logger.h"
@@ -21,11 +20,11 @@
 
 // Base
 
-ADoorsPlayer *ADoorsPlayer::DoorsPlayer = nullptr;
+AInspectPlayer *AInspectPlayer::Player = nullptr;
 
-ADoorsPlayer::ADoorsPlayer()
+AInspectPlayer::AInspectPlayer()
 {
-    DoorsPlayer = this;
+    Player = this;
 
     PrimaryActorTick.bCanEverTick = true;
 
@@ -46,7 +45,7 @@ ADoorsPlayer::ADoorsPlayer()
     SpringArmCmp->SetRelativeLocation({0.f, 0.f, BaseEyeHeight});
 }
 
-void ADoorsPlayer::BeginPlay()
+void AInspectPlayer::BeginPlay()
 {
     Super::BeginPlay();
 
@@ -59,19 +58,19 @@ void ADoorsPlayer::BeginPlay()
     Logger::Log(ShowDebugTap, "-", 5.f, FColor::Transparent, 3);
 
     // Cache PlayerController
-    PlayerController = Cast<ADoorsPlayerController>(GetController());
+    PlayerController = Cast<AInspectPlayerController>(GetController());
     if (PlayerController)
         PlayerCameraManager = PlayerController->PlayerCameraManager;
 
     // Cache GameMode
-    GameMode = Cast<ADoorsGameplayGameMode>(UGameplayStatics::GetGameMode(World));
+    GameMode = Cast<AInspectGameplayGameMode>(UGameplayStatics::GetGameMode(World));
     Logger::Log(!GameMode, "Spawning player in non gameplay game mode", 5.f, FColor::Red);
      
     // Set initial state
     SetState(PlayerStateEnum::WANDER_IDLE, true);
 }
 
-void ADoorsPlayer::Tick(float DeltaTime)
+void AInspectPlayer::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
@@ -84,66 +83,66 @@ void ADoorsPlayer::Tick(float DeltaTime)
     SearchInteractables();
 }
 
-void ADoorsPlayer::SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent)
+void AInspectPlayer::SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 
     // Bind Camera
-    InputComponent->BindAxis("LookUp", this, &ADoorsPlayer::AxisPitch);
-    InputComponent->BindAxis("Turn", this, &ADoorsPlayer::AxisYaw);
+    InputComponent->BindAxis("LookUp", this, &AInspectPlayer::AxisPitch);
+    InputComponent->BindAxis("Turn", this, &AInspectPlayer::AxisYaw);
 
     // Bind Movement Axes
-    InputComponent->BindAxis("Forward", this, &ADoorsPlayer::AxisForwards);
-    InputComponent->BindAxis("Right", this, &ADoorsPlayer::AxisRight);
+    InputComponent->BindAxis("Forward", this, &AInspectPlayer::AxisForwards);
+    InputComponent->BindAxis("Right", this, &AInspectPlayer::AxisRight);
 
     // Bind Movement Actions
-    InputComponent->BindAction("Run", IE_Pressed, this, &ADoorsPlayer::ActionRunPressed).bConsumeInput = false;
-    InputComponent->BindAction("Run", IE_Released, this, &ADoorsPlayer::ActionRunReleased).bConsumeInput = false;
+    InputComponent->BindAction("Run", IE_Pressed, this, &AInspectPlayer::ActionRunPressed).bConsumeInput = false;
+    InputComponent->BindAction("Run", IE_Released, this, &AInspectPlayer::ActionRunReleased).bConsumeInput = false;
 
-    InputComponent->BindAction("Sneak", IE_Pressed, this, &ADoorsPlayer::ActionSneakPressed).bConsumeInput = false;
-    InputComponent->BindAction("Sneak", IE_Released, this, &ADoorsPlayer::ActionSneakReleased).bConsumeInput = false;
+    InputComponent->BindAction("Sneak", IE_Pressed, this, &AInspectPlayer::ActionSneakPressed).bConsumeInput = false;
+    InputComponent->BindAction("Sneak", IE_Released, this, &AInspectPlayer::ActionSneakReleased).bConsumeInput = false;
 
-    InputComponent->BindAction("Interact", IE_Pressed, this, &ADoorsPlayer::ActionInteractPressed).bConsumeInput = false;
-    InputComponent->BindAction("Interact", IE_Released, this, &ADoorsPlayer::ActionInteractReleased).bConsumeInput = false;
+    InputComponent->BindAction("Interact", IE_Pressed, this, &AInspectPlayer::ActionInteractPressed).bConsumeInput = false;
+    InputComponent->BindAction("Interact", IE_Released, this, &AInspectPlayer::ActionInteractReleased).bConsumeInput = false;
 
-    InputComponent->BindAction("AnyKey", IE_Pressed, this, &ADoorsPlayer::OnAnyKey).bConsumeInput = false;
+    InputComponent->BindAction("AnyKey", IE_Pressed, this, &AInspectPlayer::OnAnyKey).bConsumeInput = false;
 }
 
 // Components
 
-FDoorsPlayerResponse ADoorsPlayer::GetDoorsPlayer()
+FPlayerResponse AInspectPlayer::GetDoorsPlayer()
 {
-    return FDoorsPlayerResponse(DoorsPlayer, (DoorsPlayer != nullptr));
+    return FPlayerResponse(Player, (Player != nullptr));
 }
 
-UCameraComponent *ADoorsPlayer::GetCameraCmp()
+UCameraComponent *AInspectPlayer::GetCameraCmp()
 {
     return CameraCmp;
 }
 
-USpringArmComponent *ADoorsPlayer::GetSpringArmCmp()
+USpringArmComponent *AInspectPlayer::GetSpringArmCmp()
 {
     return SpringArmCmp;
 }
 
-ADoorsPlayerController *ADoorsPlayer::GetPlayerController()
+AInspectPlayerController *AInspectPlayer::GetPlayerController()
 {
     return PlayerController;
 }
 
-APlayerCameraManager *ADoorsPlayer::GetCameraManager()
+APlayerCameraManager *AInspectPlayer::GetCameraManager()
 {
     return PlayerCameraManager;
 }
 
 // States
 
-PlayerStateEnum ADoorsPlayer::GetState()
+PlayerStateEnum AInspectPlayer::GetState()
 {
     return CurrentStateEnum;
 }
 
-void ADoorsPlayer::SetState(PlayerStateEnum NewState, bool IsSuperState)
+void AInspectPlayer::SetState(PlayerStateEnum NewState, bool IsSuperState)
 {
     CurrentStateEnum = NewState;
 
@@ -187,17 +186,17 @@ void ADoorsPlayer::SetState(PlayerStateEnum NewState, bool IsSuperState)
 
 // Interactable Detection
 
-void ADoorsPlayer::SetTraceChannel(ETraceTypeQuery Channel)
+void AInspectPlayer::SetTraceChannel(ETraceTypeQuery Channel)
 {
     CurrentTraceChannel = Channel;
 }
 
-void ADoorsPlayer::ResetTraceChannel()
+void AInspectPlayer::ResetTraceChannel()
 {
     CurrentTraceChannel = ETraceTypeQuery::TraceTypeQuery1;
 }
 
-void ADoorsPlayer::SearchInteractables()
+void AInspectPlayer::SearchInteractables()
 {
 
     auto *World = GetWorld();
@@ -215,10 +214,10 @@ void ADoorsPlayer::SearchInteractables()
 
         return ShowDebugInteractables
                    ? UKismetSystemLibrary::SphereTraceSingle(
-                         World, Start, End, Radius, ETraceTypeQuery::TraceTypeQuery1, false, {DoorsPlayer},
+                         World, Start, End, Radius, ETraceTypeQuery::TraceTypeQuery1, false, {Player},
                          EDrawDebugTrace::ForOneFrame, Result, true, Color, Color)
                    : UKismetSystemLibrary::SphereTraceSingle(
-                         World, Start, End, Radius, ETraceTypeQuery::TraceTypeQuery1, false, {DoorsPlayer},
+                         World, Start, End, Radius, ETraceTypeQuery::TraceTypeQuery1, false, {Player},
                          EDrawDebugTrace::None, Result, true);
     };
 
@@ -247,25 +246,25 @@ void ADoorsPlayer::SearchInteractables()
     OldDetectedInteractable = DetectedInteractable;
 }
 
-void ADoorsPlayer::InteractableFound(UObject *New)
+void AInspectPlayer::InteractableFound(UObject *New)
 {
     SetOutline(New, true);
     OnInteractableFound();
 }
 
-void ADoorsPlayer::InteractableChanged(UObject *New, UObject *Old)
+void AInspectPlayer::InteractableChanged(UObject *New, UObject *Old)
 {
     SetOutline(Old, false);
     SetOutline(New, true);
 }
 
-void ADoorsPlayer::InteractableLost(UObject *Old)
+void AInspectPlayer::InteractableLost(UObject *Old)
 {
     SetOutline(Old, false);
     OnInteractableLost();
 }
 
-void ADoorsPlayer::SetOutline(UObject *Obj, bool Value)
+void AInspectPlayer::SetOutline(UObject *Obj, bool Value)
 {
     if (!Obj)
         return;
@@ -298,47 +297,47 @@ void ADoorsPlayer::SetOutline(UObject *Obj, bool Value)
 
 // Input
 
-FVector2D ADoorsPlayer::GetMovementAxis()
+FVector2D AInspectPlayer::GetMovementAxis()
 {
     return MoveAxis;
 }
 
-void ADoorsPlayer::SetMovementAxis(FVector2D Value)
+void AInspectPlayer::SetMovementAxis(FVector2D Value)
 {
     MoveAxis = Value;
 }
 
-FVector2D ADoorsPlayer::GetLookAxis()
+FVector2D AInspectPlayer::GetLookAxis()
 {
     return LookAxis;
 }
 
-void ADoorsPlayer::SetLookAxis(FVector2D Value)
+void AInspectPlayer::SetLookAxis(FVector2D Value)
 {
     LookAxis = Value;
 }
 
-void ADoorsPlayer::AxisPitch(float Amount)
+void AInspectPlayer::AxisPitch(float Amount)
 {
     LookAxis.Y = Amount;
 }
 
-void ADoorsPlayer::AxisYaw(float Amount)
+void AInspectPlayer::AxisYaw(float Amount)
 {
     LookAxis.X = Amount;
 }
 
-void ADoorsPlayer::AxisForwards(float Amount)
+void AInspectPlayer::AxisForwards(float Amount)
 {
     MoveAxis.Y = Amount;
 }
 
-void ADoorsPlayer::AxisRight(float Amount)
+void AInspectPlayer::AxisRight(float Amount)
 {
     MoveAxis.X = Amount;
 }
 
-void ADoorsPlayer::ActionRunPressed()
+void AInspectPlayer::ActionRunPressed()
 {
     bActionRunState = true;
 
@@ -346,7 +345,7 @@ void ADoorsPlayer::ActionRunPressed()
         CurrentState->ActionRunPressed();
 }
 
-void ADoorsPlayer::ActionRunReleased()
+void AInspectPlayer::ActionRunReleased()
 {
     bActionRunState = false;
 
@@ -354,7 +353,7 @@ void ADoorsPlayer::ActionRunReleased()
         CurrentState->ActionRunReleased();
 }
 
-void ADoorsPlayer::ActionSneakPressed()
+void AInspectPlayer::ActionSneakPressed()
 {
     bActionSneakState = true;
 
@@ -362,7 +361,7 @@ void ADoorsPlayer::ActionSneakPressed()
         CurrentState->ActionSneakPressed();
 }
 
-void ADoorsPlayer::ActionSneakReleased()
+void AInspectPlayer::ActionSneakReleased()
 {
     bActionSneakState = false;
 
@@ -370,12 +369,12 @@ void ADoorsPlayer::ActionSneakReleased()
         CurrentState->ActionSneakReleased();
 }
 
-void ADoorsPlayer::ActionInteractPressed()
+void AInspectPlayer::ActionInteractPressed()
 {
     bActionInteractState = true;
 }
 
-void ADoorsPlayer::ActionInteractReleased()
+void AInspectPlayer::ActionInteractReleased()
 {
 
     bActionInteractState = false;
@@ -391,7 +390,7 @@ void ADoorsPlayer::ActionInteractReleased()
     }
 }
 
-void ADoorsPlayer::Move()
+void AInspectPlayer::Move()
 {
     if (MoveAxis.Size() > 1.f)
     {
@@ -403,17 +402,17 @@ void ADoorsPlayer::Move()
     auto Right = CameraCmp->GetRightVector().GetSafeNormal2D() * MoveAxis.X;
     auto Dir = Fwd + Right;
     auto Norm = Dir.Size() > 1.f ? Dir.GetSafeNormal2D() : Dir;
-    DoorsPlayer->AddMovementInput(Norm, Dir.Size());
+    Player->AddMovementInput(Norm, Dir.Size());
     
 }
 
-void ADoorsPlayer::Look(float DeltaSeconds)
+void AInspectPlayer::Look(float DeltaSeconds)
 {
     AddControllerPitchInput(fPitchSensibility * LookAxis.Y * DeltaSeconds);
     AddControllerYawInput(fYawSensibility * LookAxis.X * DeltaSeconds);
 }
 
-void ADoorsPlayer::OnAnyKey(FKey Key)
+void AInspectPlayer::OnAnyKey(FKey Key)
 {
     if (!GameMode)
         return;

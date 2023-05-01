@@ -24,12 +24,6 @@ class AAIEnemyController : public AAIDoorsController
 {
 	GENERATED_BODY()
 
-private:
-	UAISenseConfig_Sight* SightConfig;
-	UAISenseConfig_Hearing* HearingConfig;
-
-	TArray<class AMskInteractableBase*> Interactables;
-
 public:
 	AAIEnemyController();
 
@@ -39,12 +33,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		EnemyStates CurrentState = EnemyStates::Normal;
-
 	
-	// Size of the sweep sphere for checking visible points
-	UPROPERTY(Category = "Alarm Sight", EditAnywhere, BlueprintReadWrite)
-		float SphereSize_Sight = 15.f;
-
 	// Enemy speeds
 	UPROPERTY(Category = "Speed", EditAnywhere, BlueprintReadWrite)
 		float WalkingSpeed = 400;
@@ -52,7 +41,7 @@ public:
 		float RunningSpeed = 600;
 	UPROPERTY(Category = "Speed", EditAnywhere, BlueprintReadWrite)
 		float TimeForSpeedBoost = 5.f;
-	float TimeOfChase = -1.f;
+		float TimeOfChase = -1.f;
 	UPROPERTY(Category = "Speed", EditAnywhere, BlueprintReadWrite)
 		float SpeedBoost = 800;
 
@@ -83,8 +72,8 @@ public:
 
 	//Interactions
 	UFUNCTION(Category = "Interactables", BlueprintImplementableEvent)
-		/** Event that triggers when Enemy reachs an interactable. */
-		void OnInteractDoorsAI();
+	/** Event that triggers when Enemy reachs an interactable. */
+	void OnInteractDoorsAI();
 	void OnInteractDoorsAICpp();
 
 	UFUNCTION(Category = "Interactables", BlueprintCallable)

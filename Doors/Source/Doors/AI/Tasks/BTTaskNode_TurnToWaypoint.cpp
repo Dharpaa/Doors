@@ -6,14 +6,14 @@
 
 EBTNodeResult::Type UBTTaskNode_TurnToWaypoint::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-    AAIDoorsController* AICMskController = Cast<AAIDoorsController>(OwnerComp.GetOwner());
+    AAIDoorsController* AICController = Cast<AAIDoorsController>(OwnerComp.GetOwner());
 	
-	if (!AICMskController)
+	if (!AICController)
 	{
 		return EBTNodeResult::Failed;
 	}
 	
-	AICMskController->TurnToWaypoint();
+	AICController->TurnToWaypoint();
 	
     return EBTNodeResult::Succeeded;
 }

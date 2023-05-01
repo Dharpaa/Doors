@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "PlayerStateBase.h"
-#include "Doors/Enumerators/PlayerStateEnum.h"
+#include "../../Enumerators/PlayerStateEnum.h"
 #include "PlayerStateWandering.generated.h"
 
 class UCamShake;
