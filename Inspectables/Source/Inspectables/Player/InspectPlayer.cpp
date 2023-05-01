@@ -4,7 +4,6 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Perception/AISense_Hearing.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -14,6 +13,7 @@
 #include "../Interfaces/OutlinableInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "../Logger.h"
 
 #define IsImplemented UKismetSystemLibrary::DoesImplementInterface
@@ -77,6 +77,9 @@ void AInspectPlayer::Tick(float DeltaTime)
     if (CurrentState)
         CurrentState->Tick(DeltaTime);
 
+    if (bIsLookingAt)
+        WhileLookAt(DeltaTime);
+
     Move();
     Look(DeltaTime);
 
@@ -105,6 +108,9 @@ void AInspectPlayer::SetupPlayerInputComponent(class UInputComponent *PlayerInpu
     InputComponent->BindAction("Interact", IE_Pressed, this, &AInspectPlayer::ActionInteractPressed).bConsumeInput = false;
     InputComponent->BindAction("Interact", IE_Released, this, &AInspectPlayer::ActionInteractReleased).bConsumeInput = false;
 
+    // Bind Back Action
+    InputComponent->BindAction("Back", IE_Pressed, this, &AInspectPlayer::ActionBackPressed).bConsumeInput = false;
+    
     InputComponent->BindAction("AnyKey", IE_Pressed, this, &AInspectPlayer::OnAnyKey).bConsumeInput = false;
 }
 
@@ -171,6 +177,9 @@ void AInspectPlayer::SetState(PlayerStateEnum NewState, bool IsSuperState)
     case PlayerStateEnum::SNEAK_IDLE:
     case PlayerStateEnum::SNEAK_WALK:
         CurrentState = (UPlayerStateBase *)(StateSneaking);
+        break;
+    case PlayerStateEnum::INSPECTING:
+        CurrentState = (UPlayerStateBase *)(StateInspecting);
         break;
 
     case PlayerStateEnum::NONE:
@@ -329,12 +338,12 @@ void AInspectPlayer::AxisYaw(float Amount)
 
 void AInspectPlayer::AxisForwards(float Amount)
 {
-    MoveAxis.Y = Amount;
+    MoveAxis.Y = Amount * !bBlockMovement;
 }
 
 void AInspectPlayer::AxisRight(float Amount)
 {
-    MoveAxis.X = Amount;
+    MoveAxis.X = Amount * !bBlockMovement;
 }
 
 void AInspectPlayer::ActionRunPressed()
@@ -357,7 +366,7 @@ void AInspectPlayer::ActionSneakPressed()
 {
     bActionSneakState = true;
 
-    if (CurrentState)
+    if (CurrentState&& !bBlockMovement)
         CurrentState->ActionSneakPressed();
 }
 
@@ -371,12 +380,15 @@ void AInspectPlayer::ActionSneakReleased()
 
 void AInspectPlayer::ActionInteractPressed()
 {
+    if (bBlockInteract)
+        return;
     bActionInteractState = true;
 }
 
 void AInspectPlayer::ActionInteractReleased()
 {
-
+    if (bBlockInteract)
+        return;
     bActionInteractState = false;
 
     if (!DetectedInteractable)
@@ -388,6 +400,14 @@ void AInspectPlayer::ActionInteractReleased()
         IInteractableInterface::Execute_OnTap(DetectedInteractable);
         Logger::Log(ShowDebugTap, "OnTap", 1000.f, FColor::Emerald, 4);
     }
+}
+
+void AInspectPlayer::ActionBackPressed()
+{
+    if (CurrentStateEnum == PlayerStateEnum::INSPECTING)
+        SetState(PlayerStateEnum::WANDER_IDLE, true);
+
+
 }
 
 void AInspectPlayer::Move()
@@ -408,8 +428,133 @@ void AInspectPlayer::Move()
 
 void AInspectPlayer::Look(float DeltaSeconds)
 {
-    AddControllerPitchInput(fPitchSensibility * LookAxis.Y * DeltaSeconds);
-    AddControllerYawInput(fYawSensibility * LookAxis.X * DeltaSeconds);
+    AddControllerPitchInput(fPitchSensibility * LookAxis.Y * !bBlockLooking * DeltaSeconds);
+    AddControllerYawInput(fYawSensibility * LookAxis.X * !bBlockLooking * DeltaSeconds);
+}
+
+// Outer control
+
+void AInspectPlayer::LookAt(FVector Target, float Duration)
+{
+    LookAtCpp(Target, Duration, nullptr);
+}
+
+void AInspectPlayer::LookAtCpp(FVector Target, float Duration, std::function<void()> OnEnd)
+{
+    if (LookAtEnd)
+        LookAtEnd();
+
+    bIsLookingAt = true;
+    LookAtStartTimer = 0.f;
+    LookAtDuration = Duration;
+    LookAtOrigin = PlayerController->GetControlRotation();
+    LookAtTarget = Target;
+    LookAtEnd = OnEnd;
+}
+
+void AInspectPlayer::WhileLookAt(float DeltaTime)
+{
+    if (LookAtStartTimer >= LookAtDuration)
+    {
+        bIsLookingAt = false;
+        LookAtStartTimer = 0.f;
+        LookAtDuration = 0.f;
+        LookAtOrigin = FRotator::ZeroRotator;
+        LookAtTarget = FVector::ZeroVector;
+
+        if (LookAtEnd)
+            LookAtEnd();
+
+        LookAtEnd = nullptr;
+    }
+    else
+    {
+        LookAtStartTimer += DeltaTime;
+
+        auto LookAtDestiny = UKismetMathLibrary::FindLookAtRotation(
+            GetActorLocation() + SpringArmCmp->GetRelativeLocation(), LookAtTarget);
+
+        auto Lerp = FMath::Lerp(LookAtOrigin, LookAtDestiny, LookAtStartTimer / LookAtDuration);
+
+        PlayerController->SetControlRotation(Lerp);
+    }
+}
+
+// Block Input
+
+void AInspectPlayer::BlockMovement(float TimeSpan)
+{
+    if (TimeSpan <= 0.0f)
+    {
+        RestoreMovement();
+        return;
+    }
+
+    auto Remaining = GetWorldTimerManager().GetTimerRemaining(BlockMovementTimerHandle);
+
+    if (Remaining > TimeSpan)
+        return;
+
+    bBlockMovement = true;
+
+    GetWorldTimerManager().ClearTimer(BlockMovementTimerHandle);
+    GetWorldTimerManager().SetTimer(BlockMovementTimerHandle, this, &AInspectPlayer::RestoreMovement, TimeSpan);
+}
+
+void AInspectPlayer::BlockLooking(float TimeSpan)
+{
+    if (TimeSpan <= 0.0f)
+    {
+        RestoreLooking();
+        return;
+    }
+
+    auto Remaining = GetWorldTimerManager().GetTimerRemaining(BlockLookingTimerHandle);
+
+    if (Remaining > TimeSpan)
+        return;
+
+    bBlockLooking = true;
+
+    GetWorldTimerManager().ClearTimer(BlockLookingTimerHandle);
+    GetWorldTimerManager().SetTimer(BlockLookingTimerHandle, this, &AInspectPlayer::RestoreLooking, TimeSpan);
+}
+
+void AInspectPlayer::BlockInteract(float TimeSpan)
+{
+    if (TimeSpan <= 0.0f)
+    {
+        RestoreInteract();
+        return;
+    }
+
+    auto Remaining = GetWorldTimerManager().GetTimerRemaining(BlockInteractTimerHandle);
+
+    if (Remaining > TimeSpan)
+        return;
+
+    bBlockInteract = true;
+
+    GetWorldTimerManager().ClearTimer(BlockInteractTimerHandle);
+    GetWorldTimerManager().SetTimer(BlockInteractTimerHandle, this, &AInspectPlayer::RestoreInteract, TimeSpan);
+}
+
+void AInspectPlayer::RestoreMovement()
+{
+    bBlockMovement = false;
+    GetWorldTimerManager().ClearTimer(BlockMovementTimerHandle);
+}
+
+void AInspectPlayer::RestoreLooking()
+{
+    bBlockLooking = false;
+    GetWorldTimerManager().ClearTimer(BlockLookingTimerHandle);
+}
+
+void AInspectPlayer::RestoreInteract()
+{
+    bBlockInteract = false;
+    GetWorldTimerManager().ClearTimer(BlockInteractTimerHandle);
 }
 
 void AInspectPlayer::OnAnyKey(FKey Key)
@@ -419,3 +564,5 @@ void AInspectPlayer::OnAnyKey(FKey Key)
 
     GameMode->OnAnyKey(Key);
 }
+
+

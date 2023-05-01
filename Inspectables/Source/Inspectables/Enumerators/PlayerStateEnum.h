@@ -11,5 +11,6 @@ enum class PlayerStateEnum : uint8
 	WANDER_WALK = 3 UMETA(DisplayName = "Wander Walk"),
 	WANDER_RUN = 4 UMETA(DisplayName = "Wander Run"),
 	SNEAK_IDLE = 5 UMETA(DisplayName = "Sneak Idle"),
-	SNEAK_WALK = 6 UMETA(DisplayName = "Sneak Walk")
+	SNEAK_WALK = 6 UMETA(DisplayName = "Sneak Walk"),
+	INSPECTING = 7 UMETA(DisplayName = "Inspecting")
 };

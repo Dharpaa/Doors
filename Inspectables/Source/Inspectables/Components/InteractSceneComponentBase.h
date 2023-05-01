@@ -10,5 +10,5 @@ class UInteractSceneComponentBase : public USceneComponent
     GENERATED_BODY()
 
   public:
-    UInteractSceneComponentBase();;
+    UInteractSceneComponentBase();
 };

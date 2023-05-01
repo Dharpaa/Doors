@@ -10,6 +10,7 @@ class AInspectGameplayGameMode;
 class AInspectPlayerController;
 class UPlayerStateSneaking;
 class UPlayerStateWandering;
+class UPlayerStateInspecting;
 class UPlayerStateBase;
 class USpringArmComponent;
 class UCameraComponent;
@@ -36,7 +37,6 @@ struct FPlayerResponse
 UCLASS()
 class AInspectPlayer : public ACharacter
 {
-	friend UPlayerStateInspecting;
 	
 	GENERATED_BODY()
 
@@ -129,6 +129,9 @@ class AInspectPlayer : public ACharacter
 		UPROPERTY(Category = "States", EditAnywhere, Instanced)
 		UPlayerStateSneaking *StateSneaking;
 	
+		UPROPERTY(Category = "States", EditAnywhere, Instanced)
+		UPlayerStateInspecting *StateInspecting;
+	
 
 		PlayerStateEnum CurrentStateEnum = PlayerStateEnum::WANDER_IDLE;
 
@@ -198,10 +201,11 @@ class AInspectPlayer : public ACharacter
 
 	    void SetOutline(UObject *Obj, bool Value);
 	
-
+	public:
 	    UObject *DetectedInteractable = nullptr;    // Interactable currently being detected by the ray
 	    UObject *OldDetectedInteractable = nullptr; // Last frame DetectedInteractable
-
+	
+	private:
 	    ETraceTypeQuery CurrentTraceChannel = ETraceTypeQuery::TraceTypeQuery1;
 	
 	//Input
@@ -232,6 +236,8 @@ class AInspectPlayer : public ACharacter
 		void ActionInteractPressed();
 		void ActionInteractReleased();
 
+		void ActionBackPressed();
+
 		void Move();
 		void Look(float DeltaTime);
 
@@ -239,4 +245,58 @@ class AInspectPlayer : public ACharacter
 		FVector2D LookAxis = FVector2D::ZeroVector;
 
 		UFUNCTION() void OnAnyKey(FKey Key);
+
+	// Outter control
+
+		public:
+		UFUNCTION(Category = "Control", BlueprintCallable)
+		void LookAt(FVector Target, float Duration = 0.35f);
+		void LookAtCpp(FVector Target, float Duration = 0.35f, std::function<void()> OnEnd = nullptr);
+
+		void WhileLookAt(float DeltaTime);
+
+		bool bIsLookingAt = false;
+		float LookAtDuration = 0.f;
+		float LookAtStartTimer = 0.f;
+		FRotator LookAtOrigin = FRotator::ZeroRotator;
+		FVector LookAtTarget = FVector::ZeroVector;
+		std::function<void()> LookAtEnd = nullptr;
+	// Block Input
+
+	public:
+		UFUNCTION(Category = "BlockInput", BlueprintCallable)
+		/** Blocks player movement control for the specified amount of time.
+		 * @param TimeSpan The duration of the block. Sending -1.f will clear the timer. */
+		void BlockMovement(float TimeSpan);
+
+		UFUNCTION(Category = "BlockInput", BlueprintCallable)
+		/** Blocks player camera control for the specified amount of time.
+		 * @param TimeSpan The duration of the block. Sending -1.f will clear the timer. */
+		void BlockLooking(float TimeSpan);
+
+		UFUNCTION(Category = "BlockInput", BlueprintCallable)
+		/** Blocks player interaction for the specified amount of time.
+		 * @param TimeSpan The duration of the block. Sending -1.f will clear the timer. */
+		void BlockInteract(float TimeSpan);
+
+		UFUNCTION(Category = "BlockInput", BlueprintCallable)
+		/** Restore movement. */
+		void RestoreMovement();
+
+		UFUNCTION(Category = "BlockInput", BlueprintCallable)
+		/** Restore looking. */
+		void RestoreLooking();
+
+		UFUNCTION(Category = "BlockInput", BlueprintCallable)
+		/** Restore input. */
+		void RestoreInteract();
+
+	private:
+		FTimerHandle BlockMovementTimerHandle = FTimerHandle();
+		FTimerHandle BlockLookingTimerHandle = FTimerHandle();
+		FTimerHandle BlockInteractTimerHandle = FTimerHandle();
+
+		bool bBlockMovement = false;
+		bool bBlockLooking = false;
+		bool bBlockInteract = false;
 };
