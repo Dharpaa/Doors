@@ -7,7 +7,6 @@
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Blueprint/UserWidget.h"
 #include "../GameMode/InspectGameplayGameMode.h"
 #include "../Interfaces/InteractableInterface.h"
 #include "../Interfaces/OutlinableInterface.h"
