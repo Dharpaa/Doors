@@ -43,46 +43,6 @@ void AAIEnemyController::UpdateVisiblePoints(AActor* Enemy, ADoorsPlayer* SeenPl
 		return;
 	}
 	auto Sockets = ArmsMeshComponent->SkeletalMesh->GetActiveSocketList();
-
-	FVector HeadLocation;
-	FVector HeadDirection;
-	this->PerceptionComponent->GetLocationAndDirection(HeadLocation, HeadDirection);
-
-	FCollisionShape VisionSphere = FCollisionShape::MakeSphere(SphereSize_Sight);
-
-	// Checking for each arm
-	for (int i = 0; i < Sockets.Num(); i++)
-	{
-		FVector SocketLocation = Sockets[i]->GetSocketLocation(ArmsMeshComponent);
-		GetWorld()->SweepSingleByChannel(HitResult, HeadLocation, SocketLocation,
-			FQuat::Identity, ECC_Visibility, VisionSphere,
-			FCollisionQueryParams(NAME_AILineOfSight, false, this));
-
-		if (Cast<ADoorsPlayer>(HitResult.Actor) != nullptr)
-		{
-			SeenPoints++;
-		}
-	}
-
-	// Checking for the head
-	FVector AuxCameraLocation = SeenPlayer->GetCameraCmp()->GetComponentLocation();
-	GetWorld()->SweepSingleByChannel(HitResult, HeadLocation, AuxCameraLocation, FQuat::Identity,
-		ECC_Visibility, VisionSphere,
-		FCollisionQueryParams(NAME_AILineOfSight, false, this));
-	if (Cast<ADoorsPlayer>(HitResult.Actor) != nullptr)
-	{
-		SeenPoints++;
-	}
-
-	// Checking for the chest
-	FVector AuxPlayerLocation = SeenPlayer->GetTargetLocation();
-	GetWorld()->SweepSingleByChannel(HitResult, HeadLocation, AuxPlayerLocation, FQuat::Identity,
-		ECC_Visibility, VisionSphere,
-		FCollisionQueryParams(NAME_AILineOfSight, false, this));
-	if (Cast<ADoorsPlayer>(HitResult.Actor) != nullptr)
-	{
-		SeenPoints++;
-	}
 }
 
 void AAIEnemyController::EndReturning()
