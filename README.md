@@ -53,7 +53,6 @@ I hope you find my projects interesting, all feedback is welcomed and appreciate
       Parasites are bulky slow creatures that have 5 HP.
       Both enemies die in 1 shot if shot to the head.
       This project was made using different props from internet and Mixamo for enemies and animations.
-      Done following an Udemy course.
       Controls:
         PC:
         Left click to Shoot
